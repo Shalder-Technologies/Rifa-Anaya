@@ -100,7 +100,7 @@ function render(){
   const c=E.cfg;$('price').firstChild.nodeValue='Desde '+money(c.minimo);
   fact('f-lot',c.loteria);fact('f-fecha',c.fecha);
   const nq=$('f-nequi');nq.textContent='';nq.classList.toggle('empty',!c.nequi);
-  if(c.nequi){nq.append(c.nequi);nq.appendChild(el('button',{type:'button',class:'copy',text:'Copiar',on:{click:()=>copy(c.nequi.replace(/\s/g,''))}}));if(c.titular)nq.appendChild(el('div',{class:'hint',text:c.titular}));nq.appendChild(el('div',{class:'warn',text:'Llave Bre-B a cuenta Nequi. Antes de enviar, verifica que el banco destino diga Nequi y no BBVA.'}))}else nq.append('Por definir');
+  if(c.nequi){nq.append(c.nequi);nq.appendChild(el('button',{type:'button',class:'copy',text:'Copiar',on:{click:()=>copy(c.nequi.replace(/\s/g,''))}}));if(c.titular)nq.appendChild(el('div',{class:'hint',text:c.titular}));nq.appendChild(el('div',{class:'warn',text:'Antes de enviar, verifica que el banco destino diga Nequi y no BBVA.'}))}else nq.append('Por definir');
   const t=Object.keys(E.nums).length;$('c-t').textContent=t;$('c-f').textContent=100-t;
   $('p-paid').textContent=money(E.pagado);$('p-meta').textContent='de '+money(c.meta)+' · comprometido '+money(E.comprometido);
   $('b1').style.width=Math.min(100,E.comprometido/c.meta*100)+'%';$('b2').style.width=Math.min(100,E.pagado/c.meta*100)+'%';
