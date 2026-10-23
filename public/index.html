@@ -60,7 +60,7 @@ footer{color:var(--muted);font-size:13px;text-align:center}
 </style></head><body>
 <header class="hero band"><div class="inner">
   <div><h1>Rifa entre amigos</h1>
-  <p>Escoge tu número, apártalo con tu nombre y paga por Nequi o Bre-B. Gracias por sumarte!</p></div>
+  <p>Escoge tu número, apártalo con tu nombre y paga por Nequi. Gracias por sumarte!</p></div>
 </div></header>
 <main class="band"><div class="inner">
   <section class="card prize">
@@ -70,7 +70,7 @@ footer{color:var(--muted);font-size:13px;text-align:center}
       <div class="facts">
         <div class="fact"><div class="l">Juega con</div><div class="v" id="f-lot"></div></div>
         <div class="fact"><div class="l">Fecha</div><div class="v" id="f-fecha"></div></div>
-        <div class="fact"><div class="l">Nequi o Bre-B</div><div class="v" id="f-nequi"></div></div>
+        <div class="fact"><div class="l">Nequi</div><div class="v" id="f-nequi"></div></div>
       </div></div>
   </section>
   <section class="card">
@@ -114,7 +114,7 @@ function panel(){
   p.textContent='';if(!sel){p.hidden=true;return}p.hidden=false;const n=sel,d=E.nums[n],c=E.cfg;
   p.appendChild(el('div',{class:'row',style:'align-items:center;justify-content:space-between'},[el('div',{class:'big',text:n,style:'flex:0 0 auto'}),el('button',{type:'button',class:'btn ghost',text:'Cerrar',style:'flex:0 0 auto',on:{click:()=>{sel=null;justMine=null;lastKey=null;render()}}})]));
   if(justMine){const m=justMine;const box=el('div',{class:'done'});box.appendChild(el('div',{class:'msg ok',text:'¡Listo, '+m.nombre+'! El '+n+' quedó a tu nombre.'}));
-    box.appendChild(el('div',{text:c.nequi?'Paga tu aporte de '+money(m.aporte)+' al Nequi o Bre-B '+c.nequi+(c.titular?' ('+c.titular+')':'')+' y manda el comprobante al organizador.':'Paga tu aporte de '+money(m.aporte)+' por Nequi o Bre-B. El organizador te comparte los datos.'}));p.appendChild(box);
+    box.appendChild(el('div',{text:c.nequi?'Paga tu aporte de '+money(m.aporte)+' al Nequi '+c.nequi+(c.titular?' ('+c.titular+')':'')+' y manda el comprobante al organizador.':'Paga tu aporte de '+money(m.aporte)+' por Nequi. El organizador te comparte los datos.'}));p.appendChild(box);
     if(c.whatsapp){const wa=c.whatsapp.replace(/\D/g,'');p.appendChild(el('a',{class:'btn',href:'https://wa.me/'+wa+'?text='+encodeURIComponent('Hola, aparté el número '+n+' de la rifa por Anaya ('+money(m.aporte)+'). Te mando el comprobante.'),target:'_blank',rel:'noopener',text:'Enviar comprobante por WhatsApp'}))}
     return}
   if(d){p.appendChild(el('h4',{text:'El '+n+' ya está apartado por '+d.quien,style:'margin:0;font-size:19px'}));p.appendChild(el('div',{class:'hint',text:'Escoge otro de los números libres.'}));return}
@@ -126,7 +126,7 @@ function panel(){
   const am=el('div',{class:'amts'});[20000,30000,50000,100000].forEach(v=>am.appendChild(el('button',{type:'button',class:'amt',text:money(v),on:{click:()=>{iM.value=v.toLocaleString('es-CO')}}})));f.appendChild(am);
   iM.addEventListener('blur',()=>{const v=parseM(iM.value);if(v)iM.value=v.toLocaleString('es-CO')});
   const btn=el('button',{type:'submit',class:'btn',text:'Apartar el '+n}),msg=el('div',{class:'msg'});f.appendChild(btn);f.appendChild(msg);
-  f.appendChild(el('div',{class:'hint',text:'El número queda apartado al instante y queda en firme cuando pagues tu aporte por Nequi o Bre-B.'}));
+  f.appendChild(el('div',{class:'hint',text:'El número queda apartado al instante y queda en firme cuando pagues tu aporte por Nequi.'}));
   f.onsubmit=e=>{e.preventDefault();const nom=iN.value.trim(),ape=iA.value.trim(),mon=parseM(iM.value);msg.className='msg err';
     if(!nom||!ape){msg.textContent='Escribe nombre y apellido.';return}
     if(mon<c.minimo){msg.textContent='El aporte mínimo es '+money(c.minimo)+'.';return}
