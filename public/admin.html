@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin · Rifa por Anaya</title><meta name="robots" content="noindex">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&family=Figtree:wght@400;600;700&display=swap">
+<style>
+:root{--bg:#f1ede2;--surface:#fffdf6;--ink:#17261b;--muted:#5b675d;--line:#d9d1bd;--green:#1f4d2b;--gold:#9c7a22;--red:#b3261e;--ok:#2e7d46;
+--display:'Bricolage Grotesque','Arial Black',system-ui,sans-serif;--body:'Figtree',system-ui,-apple-system,'Segoe UI',sans-serif}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;padding:24px 16px 48px}
+.inner{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+h1{font-family:var(--display);font-size:32px;margin:0}h2{font-family:var(--display);font-size:22px;margin:0 0 12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px 20px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:end}.row>label{flex:1 1 170px;min-width:0}
+label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:600;color:var(--muted)}
+input{font:inherit;font-size:16px;padding:10px 12px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);min-width:0}
+.btn{font:inherit;font-weight:700;border:none;border-radius:10px;padding:10px 16px;cursor:pointer;background:var(--green);color:#fffdf6}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}.btn.danger{background:var(--red);color:#fff}
+.btn.sm{padding:5px 10px;font-size:13px}
+.stats{display:flex;gap:24px;flex-wrap:wrap}.stats b{font-family:var(--display);font-size:24px;display:block}
+.hint{color:var(--muted);font-size:14px}.msg.err{color:var(--red);font-weight:600}.msg.ok{color:var(--ok);font-weight:700}
+.tw{overflow-x:auto}table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:8px;border-bottom:1px solid var(--line);white-space:nowrap}th{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+td input{width:110px;padding:6px 8px;font-size:14px}
+.chip{font:inherit;font-size:12px;font-weight:700;padding:3px 10px;border-radius:99px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer}
+.chip.on{background:var(--gold);border-color:var(--gold);color:#1b1407}
+</style></head><body><div class="inner">
+<h1>Admin de la rifa</h1>
+
+<section class="card" id="login">
+  <form id="lf" class="row"><label for="pw">Clave de administrador<input type="password" id="pw" autocomplete="current-password"></label><button class="btn" type="submit">Entrar</button></form>
+  <div class="msg" id="lmsg"></div>
+</section>
+
+<div id="app" hidden style="display:flex;flex-direction:column;gap:18px">
+  <section class="card stats" id="stats"></section>
+  <section class="card">
+    <h2>Participantes</h2>
+    <div class="tw"><table><thead><tr><th>N.º</th><th>Nombre</th><th>Aporte</th><th>Pago</th><th>Apartado</th><th></th></tr></thead><tbody id="tb"></tbody></table></div>
+    <p class="hint" id="empty">Aún no hay números apartados.</p>
+  </section>
+  <section class="card">
+    <h2>Asignar un número a mano</h2>
+    <form id="af" class="row">
+      <label for="a-n">Número<input id="a-n" inputmode="numeric" maxlength="2" placeholder="27"></label>
+      <label for="a-nom">Nombre<input id="a-nom"></label><label for="a-ape">Apellido<input id="a-ape"></label>
+      <label for="a-m">Aporte<input id="a-m" inputmode="numeric" value="30.000"></label>
+      <button class="btn" type="submit">Asignar</button>
+    </form><div class="msg" id="amsg"></div>
+  </section>
+  <section class="card">
+    <h2>Datos de la rifa</h2>
+    <form id="cf" style="display:flex;flex-direction:column;gap:10px">
+      <div class="row"><label for="c-loteria">Lotería<input id="c-loteria"></label><label for="c-fecha">Fecha del sorteo<input id="c-fecha" placeholder="Jueves 12 de noviembre"></label></div>
+      <div class="row"><label for="c-nequi">Nequi<input id="c-nequi" inputmode="numeric"></label><label for="c-titular">Titular<input id="c-titular"></label><label for="c-whatsapp">WhatsApp (con 57)<input id="c-whatsapp" inputmode="numeric" placeholder="573001234567"></label></div>
+      <div class="row"><label for="c-meta">Meta<input id="c-meta" inputmode="numeric"></label><label for="c-minimo">Aporte mínimo<input id="c-minimo" inputmode="numeric"></label><button class="btn" type="submit">Guardar datos</button></div>
+    </form><div class="msg" id="cmsg"></div>
+  </section>
+  <p class="hint"><a href="/">Ver la página pública</a> · <button class="btn ghost sm" type="button" id="out">Salir</button></p>
+</div>
+</div>
+<script>
+const $=id=>document.getElementById(id),money=v=>'$'+Math.round(v||0).toLocaleString('es-CO'),parseM=v=>Number(String(v).replace(/\D/g,''))||0;
+let PW='';try{PW=sessionStorage.getItem('rifa_pw')||''}catch(e){}
+let D={nums:{},cfg:{}},confirmar=null;
+function el(t,a={},k=[]){const e=document.createElement(t);for(const x in a){if(x==='text')e.textContent=a[x];else if(x==='on')for(const ev in a.on)e.addEventListener(ev,a.on[ev]);else e.setAttribute(x,a[x])}k.forEach(c=>c&&e.appendChild(c));return e}
+async function api(method,body){const r=await fetch('/api/admin',{method,headers:{'Content-Type':'application/json','x-admin-password':PW},body:body?JSON.stringify(body):undefined,cache:'no-store'});const j=await r.json().catch(()=>({}));if(!r.ok){const e=new Error(j.error||'Error');e.status=r.status;throw e}return j}
+async function load(){try{D=await api('GET');$('login').hidden=true;$('app').hidden=false;render()}catch(e){$('login').hidden=false;$('app').hidden=true;if(PW){$('lmsg').className='msg err';$('lmsg').textContent=e.message}}}
+async function act(body,msgEl){try{D=await api('POST',body);confirmar=null;render();if(msgEl){msgEl.className='msg ok';msgEl.textContent='Guardado'}}catch(e){if(msgEl){msgEl.className='msg err';msgEl.textContent=e.message}else alert(e.message)}}
+function render(){
+  const ks=Object.keys(D.nums).sort(),vals=ks.map(k=>D.nums[k]);
+  const comp=vals.reduce((s,d)=>s+(Number(d.aporte)||0),0),pag=vals.filter(d=>d.pagado).reduce((s,d)=>s+(Number(d.aporte)||0),0);
+  const st=$('stats');st.textContent='';[['Pagado',money(pag)],['Comprometido',money(comp)],['Meta',money(D.cfg.meta)],['Apartados',ks.length+' / 100']].forEach(([l,v])=>st.appendChild(el('div',{},[el('span',{class:'hint',text:l}),el('b',{text:v})])));
+  const tb=$('tb');tb.textContent='';$('empty').hidden=ks.length>0;
+  ks.forEach(n=>{const d=D.nums[n];const inp=el('input',{inputmode:'numeric',value:(Number(d.aporte)||0).toLocaleString('es-CO'),'aria-label':'Aporte del '+n});
+    inp.addEventListener('change',()=>act({accion:'aporte',numero:n,valor:parseM(inp.value)}));
+    const lib=confirmar===n?el('span',{},[el('button',{type:'button',class:'btn danger sm',text:'Sí, liberar',on:{click:()=>act({accion:'liberar',numero:n})}}),document.createTextNode(' '),el('button',{type:'button',class:'btn ghost sm',text:'No',on:{click:()=>{confirmar=null;render()}}})])
+      :el('button',{type:'button',class:'btn ghost sm',text:'Liberar',on:{click:()=>{confirmar=n;render()}}});
+    tb.appendChild(el('tr',{},[el('td',{},[el('b',{text:n})]),el('td',{text:d.nombre+' '+d.apellido}),el('td',{},[inp]),
+      el('td',{},[el('button',{type:'button',class:'chip'+(d.pagado?' on':''),text:d.pagado?'Pagado':'Pendiente',on:{click:()=>act({accion:'pagado',numero:n,valor:!d.pagado})}})]),
+      el('td',{class:'hint',text:d.ts?new Date(d.ts).toLocaleString('es-CO',{day:'numeric',month:'short',hour:'numeric',minute:'2-digit'}):''}),el('td',{},[lib])]))});
+  ['loteria','fecha','nequi','titular','whatsapp','meta','minimo'].forEach(k=>{const e=$('c-'+k);if(document.activeElement!==e&&!e.dataset.dirty)e.value=D.cfg[k]??''});
+}
+['loteria','fecha','nequi','titular','whatsapp','meta','minimo'].forEach(k=>$('c-'+k).addEventListener('input',e=>e.target.dataset.dirty='1'));
+$('lf').onsubmit=e=>{e.preventDefault();PW=$('pw').value;try{sessionStorage.setItem('rifa_pw',PW)}catch(x){}load()};
+$('cf').onsubmit=async e=>{e.preventDefault();const cfg={};['loteria','fecha','nequi','titular','whatsapp','meta','minimo'].forEach(k=>cfg[k]=$('c-'+k).value.trim());await act({accion:'config',cfg},$('cmsg'));['loteria','fecha','nequi','titular','whatsapp','meta','minimo'].forEach(k=>delete $('c-'+k).dataset.dirty);render()};
+$('af').onsubmit=e=>{e.preventDefault();act({accion:'asignar',numero:$('a-n').value.trim().padStart(2,'0'),nombre:$('a-nom').value,apellido:$('a-ape').value,aporte:parseM($('a-m').value)},$('amsg')).then(()=>{if($('amsg').className.includes('ok')){$('a-n').value='';$('a-nom').value='';$('a-ape').value=''}})};
+$('out').onclick=()=>{PW='';try{sessionStorage.removeItem('rifa_pw')}catch(e){}$('login').hidden=false;$('app').hidden=true};
+if(PW)load();
+setInterval(()=>{if(PW&&!$('app').hidden&&!document.activeElement.matches('input'))load()},20000);
+</script></body></html>
