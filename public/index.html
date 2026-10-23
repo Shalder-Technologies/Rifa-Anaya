@@ -97,7 +97,7 @@ function el(t,a={},k=[]){const e=document.createElement(t);for(const x in a){if(
 const cells=[];for(let i=0;i<100;i++){const b=el('button',{type:'button',class:'n'},[el('span',{class:'d',text:pad(i)}),el('span',{class:'w'})]);b.onclick=()=>{sel=pad(i);justMine=null;lastKey=null;render();$('panel').scrollIntoView({behavior:'smooth',block:'nearest'})};$('grid').appendChild(b);cells.push(b)}
 function fact(id,v){const e=$(id);e.textContent=v||'Por definir';e.classList.toggle('empty',!v)}
 function render(){
-  const c=E.cfg;$('price').firstChild.nodeValue='Desde '+money(c.minimo);
+  const c=E.cfg;if(c.nequi){c.nequi=String(c.nequi).trim();if(c.nequi[0]!=='@')c.nequi='@'+c.nequi}$('price').firstChild.nodeValue='Desde '+money(c.minimo);
   fact('f-lot',c.loteria);fact('f-fecha',c.fecha);
   const nq=$('f-nequi');nq.textContent='';nq.classList.toggle('empty',!c.nequi);
   if(c.nequi){nq.append(c.nequi);nq.appendChild(el('button',{type:'button',class:'copy',text:'Copiar',on:{click:()=>copy(c.nequi.replace(/\s/g,''))}}));if(c.titular)nq.appendChild(el('div',{class:'hint',text:c.titular}));nq.appendChild(el('div',{class:'warn',text:'Antes de enviar, verifica que el banco destino diga Nequi y no BBVA.'}))}else nq.append('Por definir');
